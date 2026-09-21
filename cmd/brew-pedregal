@@ -1,0 +1,35 @@
+#!/bin/bash
+# pedregal — install/upgrade Pedregal Island (fetch via gh, install via brew)
+set -euo pipefail
+VERSION="0.1.0"
+ZIP="Pedregal-Island-Mac-${VERSION}-arm64.zip"
+REPO="i-am-the-slime/pedregal-island-releases"
+EXPECTED="53dcd1501ff7932560e83c7d14d93035f120b17712c376d8d5fb23b8d30692ae"
+CACHE="${HOME}/.local/share/pedregal-releases"
+TAP="$(brew --repository i-am-the-slime/pedregal-island-releases)"
+mkdir -p "$CACHE"
+ZIP_PATH="${CACHE}/${ZIP}"
+need=1
+[[ -f "$ZIP_PATH" ]] && [[ "$(shasum -a 256 "$ZIP_PATH" | awk '{print $1}')" == "$EXPECTED" ]] && need=0
+if [[ $need == 1 ]]; then
+  echo "→ Fetching ${ZIP} via gh…"
+  gh release download "v${VERSION}" --repo "$REPO" --pattern '*.zip' --output "$ZIP_PATH"
+fi
+actual=$(shasum -a 256 "$ZIP_PATH" | awk '{print $1}')
+[[ "$actual" == "$EXPECTED" ]] || { echo "✗ checksum mismatch: $actual" >&2; exit 1; }
+# ensure the file:// cask in this tap points at the fetched zip
+cat > "$TAP/Casks/pedregal-island.rb" <<RUBY
+cask "pedregal-island" do
+  version "${VERSION}"
+  sha256 "${EXPECTED}"
+  url "file://${ZIP_PATH}"
+  name "Pedregal Island"
+  desc "Flashcard learning game set on Pedregal Island"
+  homepage "https://github.com/${REPO}"
+  depends_on :macos
+  app "Pedregal-Island-Mac/Pedregal Island.app"
+end
+RUBY
+brew install --cask i-am-the-slime/pedregal-island-releases/pedregal-island 2>/dev/null \
+  || brew upgrade --cask i-am-the-slime/pedregal-island-releases/pedregal-island
+echo "✓ Pedregal Island ${VERSION} installed"
