@@ -20,4 +20,11 @@ cask "pedregal-island" do
   depends_on :macos
 
   app "Pedregal-Island-Mac/Pedregal Island.app"
+
+  # The app is ad-hoc signed (no Developer ID), so Gatekeeper warns on first
+  # launch unless the quarantine flag is stripped after install/upgrade.
+  postflight do
+    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine",
+      "#{appdir}/Pedregal Island.app"]
+  end
 end
