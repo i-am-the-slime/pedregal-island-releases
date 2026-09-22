@@ -25,6 +25,6 @@ cask "pedregal-island" do
   # launch unless the quarantine flag is stripped after install/upgrade.
   postflight do
     system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine",
-      "#{appdir}/Pedregal Island.app"]
+      "/Applications/Pedregal Island.app"]
   end
 end
