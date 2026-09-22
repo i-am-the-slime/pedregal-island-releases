@@ -1,6 +1,6 @@
 cask "pedregal-island" do
-  version "0.1.2"
-  sha256 "a361240eef6af9948a13722a5b8e7fd2733b94e5a0f3ad59afb413ab1b70c03e"
+  version "0.1.3"
+  sha256 "1be6543eeeff5b31678fc67a7324837c50b6448d7b60a3ca2d464dfa6f7c1433"
 
   # Private release asset. One-time setup on each machine:
   #   gh auth login                    # if not already logged in
@@ -9,7 +9,7 @@ cask "pedregal-island" do
   # The cask reads the token from that file; brew strips Authorization on
   # the cross-host redirect, but the redirect target is pre-signed (no auth).
   token = File.read(File.expand_path("~/.config/pedregal/gh-token")).strip
-  asset_id = "578698431"
+  asset_id = "581293605"
 
   url "https://api.github.com/repos/i-am-the-slime/pedregal-island-releases/releases/assets/#{asset_id}",
       header: ["Authorization: token #{token}", "Accept: application/octet-stream"]
